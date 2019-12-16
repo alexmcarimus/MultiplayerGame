@@ -1,0 +1,40 @@
+// General Networking Actions
+export const NETWORK_SEND_PLAYER_DATA = "NETWORK_SEND_PLAYER_DATA";
+export const NETWORK_RECEIVE_PLAYER_DATA = "NETWORK_RECEIVE_OPPONENT_DATA";
+
+// Title Screen Actions
+export const TITLE_CLICK_START = "TITLE_CLICK_START";
+
+// Main Screen Actions
+export const MAIN_INPUT_NAME = "MAIN_INPUT_NAME";
+export const MAIN_INPUT_ROOM = "MAIN_INPUT_ROOM";
+export const MAIN_CLICK_START = "MAIN_CLICK_START";
+export const MAIN_CLICK_JOIN = "MAIN_CLICK_JOIN";
+export const MAIN_CLICK_MORE = "MAIN_CLICK_MORE";
+
+// Lobby Screen Actions
+export const LOBBY_CLICK_CANCEL = "LOBBY_CLICK_CANCEL";
+
+// Wager Screen Actions
+export const WAGER_INPUT_MONEY = "WAGER_INPUT_MONEY";
+
+// Decide Screen Actions
+export const DECIDE_CLICK_COOPERATE = "DECIDE_CLICK_COOPERATE";
+export const DECIDE_CLICK_BETRAY = "DECIDE_CLICK_BETRAY";
+
+// Result Screen Actions
+export const RESULT_UPDATE_SCORE = "RESULT_UPDATE_SCORE";
+export const RESULT_CLICK_RETURN = "RESULT_CLICK_RETURN";
+
+// Navigation Actions
+export const NAVIGATE_TO_TITLE = "NAVIGATE TO TITLE";
+export const NAVIGATE_TO_MAIN = "NAVIGATE_TO_MAIN";
+export const NAVIGATE_TO_LOBBY = "NAVIGATE_TO_LOBBY";
+export const NAVIGATE_TO_WAGER = "NAVIGATE_TO_WAGER";
+export const NAVIGATE_TO_DECIDE = "NAVIGATE_TO_DECIDE";
+export const NAVIGATE_TO_RESULT = "NAVIGATE_TO_RESULT";
+
+// Other
+export const GENERATE_FAKE_OPPONENT = "GENERATE_FAKE_OPPONENT";
+export const READY_OPPONENT = "READY_OPPONENT";
+export const READY_PLAYER = "READY_PLAYER";
