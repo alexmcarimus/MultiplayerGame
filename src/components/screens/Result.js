@@ -1,6 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Animated } from 'react-native';
+import { Text, View, TouchableOpacity, Animated } from 'react-native';
 import calculatePayout from '../../helpers/calculations';
+import { styles } from '../../styles/stylesheets';
+import { displayLogo } from '../widgets/widgets';
+import PropTypes from 'prop-types';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -58,7 +61,7 @@ export default class Result extends React.Component {
         return (
             <View style={styles.container}>
                 <Animated.View style={{opacity: this.state.title1Fade}}>
-                    <Text style={styles.title}>
+                    <Text style={styles.result}>
                         You chose to...
                     </Text>
                 </Animated.View>
@@ -66,7 +69,7 @@ export default class Result extends React.Component {
                     {this.playerChoice()}
                 </Animated.View>
                 <Animated.View style={{opacity: this.state.title2Fade}}>
-                    <Text style={styles.title}>
+                    <Text style={styles.result}>
                         Opponent chose to...
                     </Text>
                 </Animated.View>
@@ -76,7 +79,7 @@ export default class Result extends React.Component {
                 <View style={styles.spacing}>
                 </View>
                 <Animated.View style={{opacity: this.state.title3Fade}}>
-                    <Text style={styles.title}>
+                    <Text style={styles.result}>
                         Results...
                     </Text>
                 </Animated.View>
@@ -92,11 +95,7 @@ export default class Result extends React.Component {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <Image
-                    style={styles.logo}
-                    source={require('../../../images/carimus-logo-transparency.png')}
-                >
-                </Image>
+                {displayLogo()}
             </View>
         );
     }
@@ -142,18 +141,18 @@ export default class Result extends React.Component {
             return (
                 <View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (You){" "}
                         </Text>
                         <Text style={styles.steal}>
                             ${this.state.score}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.player.money}{" "}
                         </Text>
                         <Text style={styles.steal}>
@@ -163,18 +162,18 @@ export default class Result extends React.Component {
                     <View style={styles.spacing}>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (Them){" "}
                         </Text>
                         <Text style={styles.steal}>
                             ${parseInt(this.props.opponent.money) + parseInt(this.state.payoutBB.opponent)}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.opponent.money}{" "}
                         </Text>
                         <Text style={styles.steal}>
@@ -190,18 +189,18 @@ export default class Result extends React.Component {
             return (
                 <View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (You){" "}
                         </Text>
                         <Text style={styles.split}>
                             ${this.state.score}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.player.money}{" "}
                         </Text>
                         <Text style={styles.split}>
@@ -211,18 +210,18 @@ export default class Result extends React.Component {
                     <View style={styles.spacing}>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (Them){" "}
                         </Text>
                         <Text style={styles.steal}>
                             ${parseInt(this.props.opponent.money) + parseInt(this.state.payoutBC.opponent)}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.opponent.money}{" "}
                         </Text>
                         <Text style={styles.steal}>
@@ -238,18 +237,18 @@ export default class Result extends React.Component {
             return (
                 <View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (You){" "}
                         </Text>
                         <Text style={styles.steal}>
                             ${this.state.score}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.player.money}{" "}
                         </Text>
                         <Text style={styles.steal}>
@@ -259,18 +258,18 @@ export default class Result extends React.Component {
                     <View style={styles.spacing}>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (Them){" "}
                         </Text>
                         <Text style={styles.split}>
                             ${parseInt(this.props.opponent.money) + parseInt(this.state.payoutCB.opponent)}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.opponent.money}{" "}
                         </Text>
                         <Text style={styles.split}>
@@ -286,18 +285,18 @@ export default class Result extends React.Component {
             return (
                 <View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (You){" "}
                         </Text>
                         <Text style={styles.split}>
                             ${this.state.score}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.player.money}{" "}
                         </Text>
                         <Text style={styles.split}>
@@ -307,18 +306,18 @@ export default class Result extends React.Component {
                     <View style={styles.spacing}>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             (Them){" "}
                         </Text>
                         <Text style={styles.split}>
                             ${parseInt(this.props.opponent.money) + parseInt(this.state.payoutCC.opponent)}
                         </Text>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             {" "}={" "}
                         </Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.title}>
+                        <Text style={styles.result}>
                             ${this.props.opponent.money}{" "}
                         </Text>
                         <Text style={styles.split}>
@@ -391,79 +390,51 @@ export default class Result extends React.Component {
     }
 };
 
-const styles = StyleSheet.create({
-    button: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 300,
-        position: 'absolute',
-        bottom: 20,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#0A0943',
-    },
-    logo: {
-        position: 'absolute',
-        top: 40,
-        height: 80,
-        resizeMode: 'contain',
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#0A0943',
-    },
-    title: {
-        color: '#F8F8F8',
-        fontWeight: 'bold',
-        fontSize: 35,
-    },
-    subtext: {
-        color: '#92CD97',
-        fontSize: 25,
-    },
-    input: {
-        color: '#0A0943',
-        fontWeight: 'bold',
-        fontSize: 30,
-    },
-    field: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 300
-    },
-    spacing: {
-        height: 50,
-    },
-    money: {
-        color: '#F8F8F8',
-        fontWeight: 'bold',
-        fontSize: 40,
-    },
-    splitBig: {
-        color: '#92CD97',
-        fontSize: 50,
-    },
-    stealBig: {
-        color: '#FFB7B6',
-        fontSize: 50,
-    },
-    split: {
-        color: '#92CD97',
-        fontWeight: 'bold',
-        fontSize: 35,
-    },
-    steal: {
-        color: '#FFB7B6',
-        fontWeight: 'bold',
-        fontSize: 35,
-    },
-});
+Result.propTypes = {
+    application: PropTypes.shape({
+        screen: PropTypes.string.isRequired,
+        room: PropTypes.string,
+    }),
+    player: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    opponent: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    network: PropTypes.shape({
+        socket: PropTypes.object.isRequired,
+    }),
+    networkDisconnect:PropTypes.func,
+    networkSendPlayerData:PropTypes.func,
+    networkReceivePlayerData: PropTypes.func,
+    networkRoomJoin: PropTypes.func,
+    networkRoomLeave: PropTypes.func,
+    navigateToTitle: PropTypes.func,
+    navigateToMain: PropTypes.func,
+    navigateToWager: PropTypes.func,
+    navigateToDecide: PropTypes.func,
+    navigateToResult: PropTypes.func,
+    mainInputName: PropTypes.func,
+    mainInputRoom: PropTypes.func,
+    mainClickStart: PropTypes.func,
+    mainClickJoin: PropTypes.func,
+    mainClickMore: PropTypes.func,
+    lobbyClickCancel: PropTypes.func,
+    generateFakeOpponent: PropTypes.func,
+    readyOpponent: PropTypes.func,
+    readyPlayer: PropTypes.func,
+    wagerInputMoney: PropTypes.func,
+    decideClickCooperate: PropTypes.func,
+    decideClickBetray: PropTypes.func,
+    resultUpdateScore: PropTypes.func,
+};

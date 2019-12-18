@@ -1,7 +1,10 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity, Switch} from 'react-native';
+import {Text, View, TouchableOpacity, Switch} from 'react-native';
 import {STATUS_READY, STATUS_WAITING} from '../../constants/statuses';
 import calculatePayout from '../../helpers/calculations';
+import { styles } from '../../styles/stylesheets';
+import { displayLogo} from '../widgets/widgets';
+import PropTypes from 'prop-types';
 
 export default class Decide extends React.Component {
     constructor(props) {
@@ -28,21 +31,22 @@ export default class Decide extends React.Component {
 
     componentDidMount() {
         // If the player is ready, go to the next screen. Otherwise, wait for them
-        this.decideTimeout = setTimeout(() => {
-            if (this.props.player.status === STATUS_READY) {
-                this.props.onReady();
-            }
-            else {
-                this.props.onOpponentReady();
-            }
-        }, 20000);
+        this.props.network.socket.on('exchangeResponse', (message) => {
+            this.props.onResponse(message);
+        });
     }
 
     componentWillUnmount() {
-        clearTimeout(this.decideTimeout);
+        this.props.network.socket.off('exchangeResponse');
+        // Do not need networking for screens after here, do not get disconnect events
+        this.props.network.socket.off('disconnect');
     }
 
     render() {
+        if (this.props.player.status === STATUS_READY && this.props.opponent.status === STATUS_READY) {
+            this.props.onReady();
+            this.props.onLeave(this.props.application.room, this.props.network.socket);
+        }
         return (
             <View style={styles.container}>
                 <Text style={styles.money}>
@@ -107,11 +111,7 @@ export default class Decide extends React.Component {
                 <View style={styles.verticalSpacing}>
                 </View>
                 {this.displayReadyButton()}
-                <Image
-                    style={styles.logo}
-                    source={require('../../../images/carimus-logo-transparency.png')}
-                >
-                </Image>
+                {displayLogo()}
             </View>
         );
     }
@@ -263,6 +263,7 @@ export default class Decide extends React.Component {
                 <View style={styles.ready}>
                     <TouchableOpacity onPress={() => {
                         this.props.onPlayerReady();
+                        this.props.onSend(this.props.player, this.props.network.socket);
                     }}>
                         <Text style={styles.input}>
                             READY?
@@ -276,14 +277,10 @@ export default class Decide extends React.Component {
                 <View style={styles.opponentReady}>
                     <TouchableOpacity onPress={() => {
                         // If the opponent is ready, go to the next screen. Otherwise, wait for them
-                        if (this.props.opponent.status === STATUS_READY) {
-                            this.props.onReady();
-                        }
-                        else {
-                            this.props.onPlayerReady();
-                        }
+                        this.props.onPlayerReady();
+                        this.props.onSend(this.props.player, this.props.network.socket);
                     }}>
-                        <Text style={styles.button}>
+                        <Text style={styles.buttonText}>
                             OPPONENT IS READY...
                         </Text>
                     </TouchableOpacity>
@@ -294,7 +291,7 @@ export default class Decide extends React.Component {
             return (
                 <View style={styles.waiting}>
                     <TouchableOpacity disabled={true}>
-                        <Text style={styles.button}>
+                        <Text style={styles.buttonText}>
                             WAITING ON OPPONENT...
                         </Text>
                     </TouchableOpacity>
@@ -302,103 +299,54 @@ export default class Decide extends React.Component {
             );
         }
     }
-
 };
 
-const styles = StyleSheet.create({
-    button: {
-        color: '#0A0943',
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-    ready: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 300,
-        position: 'absolute',
-        bottom: 20,
-    },
-    opponentReady: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFB7B6',
-        height: 50,
-        width: 300,
-        position: 'absolute',
-        bottom: 20,
-    },
-    waiting: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#92CD97',
-        height: 50,
-        width: 300,
-        position: 'absolute',
-        bottom: 20,
-    },
-    logo: {
-        position: 'absolute',
-        top: 40,
-        height: 80,
-        resizeMode: 'contain',
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#0A0943',
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#0A0943',
-    },
-    splitBig: {
-        color: '#92CD97',
-        fontWeight: 'bold',
-        fontSize: 40,
-    },
-    stealBig: {
-        color: '#FFB7B6',
-        fontWeight: 'bold',
-        fontSize: 40,
-    },
-    split: {
-        color: '#92CD97',
-        fontSize: 30,
-    },
-    steal: {
-        color: '#FFB7B6',
-        fontSize: 30,
-    },
-    subtext: {
-        color: '#F8F8F8',
-        fontSize: 25,
-    },
-    input: {
-        color: '#0A0943',
-        fontWeight: 'bold',
-        fontSize: 30,
-    },
-    field: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 300
-    },
-    verticalSpacing: {
-        height: 50,
-    },
-    horizontalSpacing: {
-        width: 25,
-    },
-    money: {
-        color: '#F8F8F8',
-        fontWeight: 'bold',
-        fontSize: 40,
-    }
-});
+Decide.propTypes = {
+    application: PropTypes.shape({
+        screen: PropTypes.string.isRequired,
+        room: PropTypes.string,
+    }),
+    player: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    opponent: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    network: PropTypes.shape({
+        socket: PropTypes.object.isRequired,
+    }),
+    networkDisconnect:PropTypes.func,
+    networkSendPlayerData:PropTypes.func,
+    networkReceivePlayerData: PropTypes.func,
+    networkRoomJoin: PropTypes.func,
+    networkRoomLeave: PropTypes.func,
+    navigateToTitle: PropTypes.func,
+    navigateToMain: PropTypes.func,
+    navigateToWager: PropTypes.func,
+    navigateToDecide: PropTypes.func,
+    navigateToResult: PropTypes.func,
+    mainInputName: PropTypes.func,
+    mainInputRoom: PropTypes.func,
+    mainClickStart: PropTypes.func,
+    mainClickJoin: PropTypes.func,
+    mainClickMore: PropTypes.func,
+    lobbyClickCancel: PropTypes.func,
+    generateFakeOpponent: PropTypes.func,
+    readyOpponent: PropTypes.func,
+    readyPlayer: PropTypes.func,
+    wagerInputMoney: PropTypes.func,
+    decideClickCooperate: PropTypes.func,
+    decideClickBetray: PropTypes.func,
+    resultUpdateScore: PropTypes.func,
+};
+

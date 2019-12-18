@@ -3,6 +3,8 @@ import { STATUS_WAITING, STATUS_READY } from '../constants/statuses';
 import {
     NETWORK_SEND_PLAYER_DATA,
     NETWORK_RECEIVE_PLAYER_DATA,
+    NETWORK_ROOM_JOIN,
+    NETWORK_ROOM_LEAVE,
     MAIN_INPUT_NAME,
     MAIN_CLICK_JOIN,
     MAIN_CLICK_MORE,
@@ -17,9 +19,14 @@ import {
     NAVIGATE_TO_WAGER,
     NAVIGATE_TO_DECIDE,
     NAVIGATE_TO_RESULT,
-    MAIN_INPUT_ROOM, GENERATE_FAKE_OPPONENT, READY_OPPONENT, READY_PLAYER, RESULT_UPDATE_SCORE,
+    MAIN_INPUT_ROOM,
+    GENERATE_FAKE_OPPONENT,
+    READY_OPPONENT,
+    READY_PLAYER,
+    RESULT_UPDATE_SCORE, NETWORK_DISCONNECT,
 } from '../constants/actions';
 import { MONEY_AMOUNT } from '../constants/game';
+import io from "socket.io-client";
 
 const initialState = {
     application: {
@@ -27,7 +34,7 @@ const initialState = {
         screen: SCREEN_TITLE,
     },
     player: {
-        id: 0,
+        id: '' + new Date().getTime(),
         name: 'Anonymous',
         money: 0,
         wager: 0,
@@ -35,18 +42,23 @@ const initialState = {
         status: STATUS_WAITING,
     },
     opponent: {
-        id: 0,
+        id: '',
         name: 'Opponent',
         money: 0,
         wager: 0,
         betrayal: false,
         status: STATUS_WAITING,
+    },
+    network: {
+        socket: io('http://127.0.0.1:8002'),
     }
 };
 
 function rootReducer(state = initialState, action) {
     let newState;
     switch (action.type) {
+        case NETWORK_DISCONNECT:
+            return initialState;
         case NETWORK_SEND_PLAYER_DATA:
             newState = {
                 application: {
@@ -54,12 +66,12 @@ function rootReducer(state = initialState, action) {
                 },
                 player: {
                     ...state.player,
-                    status: STATUS_READY,
                 },
                 opponent: {
                     ...state.opponent,
                 }
             };
+            action.socket.emit('exchange', newState.player, newState.application.room);
             return {
                 ...state,
                 ...newState
@@ -73,11 +85,45 @@ function rootReducer(state = initialState, action) {
                 player : {
                     ...state.player,
                 },
-                opponent: action.payload.opponent,
+                opponent: action.payload,
             };
             return {
                 ...state,
-                ...newState
+                ...newState,
+            };
+        case NETWORK_ROOM_JOIN:
+            newState = {
+                application: {
+                    ...state.application,
+                },
+                player : {
+                    ...state.player,
+                },
+                opponent : {
+                    ...state.opponent,
+                },
+            };
+            action.socket.emit('joinRoom', action.room);
+            return {
+                ...state,
+                ...newState,
+            };
+        case NETWORK_ROOM_LEAVE:
+            newState = {
+                application: {
+                    ...state.application,
+                },
+                player : {
+                    ...state.player,
+                },
+                opponent : {
+                    ...state.opponent,
+                },
+            };
+            action.socket.emit('leaveRoom', action.room);
+            return {
+                ...state,
+                ...newState,
             };
         case MAIN_INPUT_NAME:
             // Set player's name
@@ -120,10 +166,10 @@ function rootReducer(state = initialState, action) {
                 application: {
                     ...state.application,
                     screen: SCREEN_LOBBY,
-                    status: STATUS_WAITING,
                 },
                 player: {
                     ...state.player,
+                    status: STATUS_WAITING,
                 },
                 opponent: {
                     ...state.opponent,
@@ -138,10 +184,10 @@ function rootReducer(state = initialState, action) {
                 application: {
                     ...state.application,
                     screen: SCREEN_LOBBY,
-                    status: STATUS_READY,
                 },
                 player: {
                     ...state.player,
+                    status: STATUS_READY,
                 },
                 opponent: {
                     ...state.opponent,
@@ -265,7 +311,7 @@ function rootReducer(state = initialState, action) {
                 },
                 players: {
                     ...state.player,
-                    id: new Date().getUTCMilliseconds(),
+                    id: new Date().getTime(),
                 },
                 opponent: {
                     ...state.opponent,
@@ -326,6 +372,7 @@ function rootReducer(state = initialState, action) {
                 },
                 opponent: {
                     ...state.opponent,
+                    status: STATUS_WAITING,
                 }
             };
             return {
@@ -365,6 +412,7 @@ function rootReducer(state = initialState, action) {
                 },
                 opponent: {
                     ...state.opponent,
+                    status: STATUS_WAITING,
                 }
             };
             return {

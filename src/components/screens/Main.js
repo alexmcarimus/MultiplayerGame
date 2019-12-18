@@ -1,7 +1,33 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { styles } from '../../styles/stylesheets';
+import { displayLogo } from '../widgets/widgets';
+import PropTypes from 'prop-types';
+import { MAX_PLAYERS } from '../../constants/game';
 
 export default class Main extends React.Component {
+    componentDidMount() {
+        this.props.network.socket.on('checkCreateRoomResponse', (message) => {
+            if (message > 0) {
+                alert('That room code is already being used! Please use a different code or wait for it to free up!');
+            }
+            else {
+                this.props.onStartClick();
+            }
+        });
+        this.props.network.socket.on('checkJoinRoomResponse', (message) => {
+            if (message === 0) {
+                alert('That room is empty! Please use a different code or create the room yourself!');
+            }
+            else if (message >= MAX_PLAYERS) {
+                alert('That room is full! Please use a different code or wait for it to free up!');
+            }
+            else {
+                this.props.onJoinClick();
+            }
+        });
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -56,8 +82,11 @@ export default class Main extends React.Component {
                             else if (this.props.player.money === null || this.props.player.money === undefined || this.props.player.money === 0) {
                                 alert('Cannot start playing without money! Please come back when you can afford to play!');
                             }
+                            else if (this.props.network.socket.disconnected) {
+                                alert('Lost Websocket connection! Try again later...');
+                            }
                             else {
-                                this.props.onStartClick();
+                                this.props.network.socket.emit('checkRoom', this.props.application.room, 'CREATE');
                             }
                         }}>
                             <Text style={styles.input}>
@@ -68,13 +97,16 @@ export default class Main extends React.Component {
                     <View style={styles.right}>
                         <TouchableOpacity onPress={() => {
                             if (this.props.application.room === null || this.props.application.room === undefined || this.props.application.room === '') {
-                                alert('Cannot create room with empty Room Code! Please enter a value before starting a room.');
+                                alert('Cannot join room with empty Room Code! Please enter a value before starting a room.');
                             }
                             else if (this.props.player.money === null || this.props.player.money === undefined || this.props.player.money === 0) {
                                 alert('Cannot start playing without money! Please come back when you can afford to play!');
                             }
+                            else if (this.props.network.socket.disconnected) {
+                                alert('Lost Websocket connection! Try again later...');
+                            }
                             else {
-                                this.props.onJoinClick();
+                                this.props.network.socket.emit('checkRoom', this.props.application.room, 'JOIN');
                             }
                         }}>
                             <Text style={styles.input}>
@@ -105,73 +137,57 @@ export default class Main extends React.Component {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <Image
-                    style={styles.logo}
-                    source={require('../../../images/carimus-logo-transparency.png')}
-                >
-                </Image>
+                {displayLogo()}
             </View>
         );
     }
 };
 
-const styles = StyleSheet.create({
-    logo: {
-        position: 'absolute',
-        top: 40,
-        height: 80,
-        resizeMode: 'contain',
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#0A0943',
-    },
-    input: {
-        color: '#0A0943',
-        fontWeight: 'bold',
-        fontSize: 30,
-    },
-    field: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 300
-    },
-    title: {
-        color: '#92CD97',
-        fontWeight: 'bold',
-        fontSize: 40,
-    },
-    money: {
-        color: '#F8F8F8',
-        fontWeight: 'bold',
-        fontSize: 40,
-    },
-    spacing: {
-        height: 50,
-    },
-    left: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 125,
-        right: 25,
-    },
-    right: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        height: 50,
-        width: 125,
-        left: 25,
-    },
-    room: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    }
-});
+Main.propTypes = {
+    application: PropTypes.shape({
+        screen: PropTypes.string.isRequired,
+        room: PropTypes.string,
+    }),
+    player: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    opponent: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    network: PropTypes.shape({
+        socket: PropTypes.object.isRequired,
+    }),
+    networkDisconnect:PropTypes.func,
+    networkSendPlayerData:PropTypes.func,
+    networkReceivePlayerData: PropTypes.func,
+    networkRoomJoin: PropTypes.func,
+    networkRoomLeave: PropTypes.func,
+    navigateToTitle: PropTypes.func,
+    navigateToMain: PropTypes.func,
+    navigateToWager: PropTypes.func,
+    navigateToDecide: PropTypes.func,
+    navigateToResult: PropTypes.func,
+    mainInputName: PropTypes.func,
+    mainInputRoom: PropTypes.func,
+    mainClickStart: PropTypes.func,
+    mainClickJoin: PropTypes.func,
+    mainClickMore: PropTypes.func,
+    lobbyClickCancel: PropTypes.func,
+    generateFakeOpponent: PropTypes.func,
+    readyOpponent: PropTypes.func,
+    readyPlayer: PropTypes.func,
+    wagerInputMoney: PropTypes.func,
+    decideClickCooperate: PropTypes.func,
+    decideClickBetray: PropTypes.func,
+    resultUpdateScore: PropTypes.func,
+};

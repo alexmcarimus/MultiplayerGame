@@ -1,19 +1,43 @@
 import {
-    NETWORK_SEND_PLAYER_DATA, NETWORK_RECEIVE_PLAYER_DATA,
+    NETWORK_SEND_PLAYER_DATA,
+    NETWORK_RECEIVE_PLAYER_DATA,
     TITLE_CLICK_START,
-    MAIN_INPUT_NAME, MAIN_CLICK_JOIN, MAIN_CLICK_MORE, MAIN_CLICK_START, MAIN_INPUT_ROOM,
+    MAIN_INPUT_NAME,
+    MAIN_CLICK_JOIN,
+    MAIN_CLICK_MORE,
+    MAIN_CLICK_START,
+    MAIN_INPUT_ROOM,
     LOBBY_CLICK_CANCEL,
     WAGER_INPUT_MONEY,
-    DECIDE_CLICK_BETRAY, DECIDE_CLICK_COOPERATE,
+    DECIDE_CLICK_BETRAY,
+    DECIDE_CLICK_COOPERATE,
     RESULT_CLICK_RETURN,
-    NAVIGATE_TO_TITLE, NAVIGATE_TO_MAIN, NAVIGATE_TO_LOBBY, NAVIGATE_TO_WAGER, NAVIGATE_TO_DECIDE, NAVIGATE_TO_RESULT,
-    GENERATE_FAKE_OPPONENT, READY_OPPONENT, READY_PLAYER, RESULT_UPDATE_SCORE,
+    NAVIGATE_TO_TITLE,
+    NAVIGATE_TO_MAIN,
+    NAVIGATE_TO_LOBBY,
+    NAVIGATE_TO_WAGER,
+    NAVIGATE_TO_DECIDE,
+    NAVIGATE_TO_RESULT,
+    GENERATE_FAKE_OPPONENT,
+    READY_OPPONENT,
+    READY_PLAYER,
+    RESULT_UPDATE_SCORE,
+    NETWORK_ROOM_JOIN,
+    NETWORK_ROOM_LEAVE,
+    NETWORK_DISCONNECT,
 } from '../constants/actions';
 
-export function a_NetworkSendPlayerData(payload) {
+export function a_NetworkDisconnect() {
+    return ({
+        type: NETWORK_DISCONNECT,
+    });
+}
+
+export function a_NetworkSendPlayerData(payload, socket) {
     return ({
         type: NETWORK_SEND_PLAYER_DATA,
         payload: payload,
+        socket: socket,
     });
 }
 
@@ -21,6 +45,22 @@ export function a_NetworkReceivePlayerData(payload) {
     return ({
         type: NETWORK_RECEIVE_PLAYER_DATA,
         payload: payload,
+    });
+}
+
+export function a_NetworkRoomJoin(room, socket) {
+    return ({
+        type: NETWORK_ROOM_JOIN,
+        room: room,
+        socket: socket,
+    });
+}
+
+export function a_NetworkRoomLeave(room, socket) {
+    return ({
+        type: NETWORK_ROOM_LEAVE,
+        room: room,
+        socket: socket,
     });
 }
 

@@ -3,11 +3,11 @@ export default function calculatePayout(playerWager, playerBetrayal, opponentWag
         player: 0,
         opponent: 0,
     };
-    // Both players cooperate? Give them both half the average wager
+    // Both players cooperate? Give them both half the average wager multiplied by 1.5
     if (playerBetrayal === false && opponentBetrayal === false) {
         payout = {
-            player: Math.round((parseInt(playerWager) + parseInt(opponentWager)) / 2),
-            opponent: Math.round((parseInt(playerWager) + parseInt(opponentWager)) / 2),
+            player: Math.round((1.5 * (parseInt(playerWager) + parseInt(opponentWager)) / 2)),
+            opponent: Math.round((1.5 * (parseInt(playerWager) + parseInt(opponentWager)) / 2)),
         };
     }
     // Player betrays a cooperating opponent? Give them all of the total wager with the opponent losing theirs

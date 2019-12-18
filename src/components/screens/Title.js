@@ -1,5 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Image } from 'react-native';
+import { Text, View, TouchableWithoutFeedback} from 'react-native';
+import { styles } from '../../styles/stylesheets';
+import { displayLogo } from '../widgets/widgets';
+import PropTypes from 'prop-types';
 
 export default class Title extends React.Component {
     render() {
@@ -16,11 +19,7 @@ export default class Title extends React.Component {
                         >
                             Press anywhere to continue...
                         </Text>
-                        <Image
-                            style={styles.logo}
-                            source={require('../../../images/carimus-logo-transparency.png')}
-                        >
-                        </Image>
+                        {displayLogo()}
                     </View>
             </TouchableWithoutFeedback>
         );
@@ -31,26 +30,51 @@ export default class Title extends React.Component {
     }
 };
 
-const styles = StyleSheet.create({
-   logo: {
-       position: 'absolute',
-       top: 40,
-       height: 80,
-       resizeMode: 'contain',
-   },
-   container: {
-       flex: 1,
-       justifyContent: 'center',
-       alignItems: 'center',
-       backgroundColor: '#0A0943',
-   },
-   title: {
-       color: '#F8F8F8',
-       fontWeight: 'bold',
-       fontSize: 40,
-   },
-   subtext: {
-       color: '#92CD97',
-       fontSize: 25,
-   },
-});
+Title.propTypes = {
+    application: PropTypes.shape({
+        screen: PropTypes.string.isRequired,
+        room: PropTypes.string,
+    }),
+    player: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    opponent: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        money: PropTypes.number.isRequired,
+        wager: PropTypes.number.isRequired,
+        betrayal: PropTypes.bool.isRequired,
+        status: PropTypes.string.isRequired,
+    }),
+    network: PropTypes.shape({
+        socket: PropTypes.object.isRequired,
+    }),
+    networkDisconnect:PropTypes.func,
+    networkSendPlayerData:PropTypes.func,
+    networkReceivePlayerData: PropTypes.func,
+    networkRoomJoin: PropTypes.func,
+    networkRoomLeave: PropTypes.func,
+    navigateToTitle: PropTypes.func,
+    navigateToMain: PropTypes.func,
+    navigateToWager: PropTypes.func,
+    navigateToDecide: PropTypes.func,
+    navigateToResult: PropTypes.func,
+    mainInputName: PropTypes.func,
+    mainInputRoom: PropTypes.func,
+    mainClickStart: PropTypes.func,
+    mainClickJoin: PropTypes.func,
+    mainClickMore: PropTypes.func,
+    lobbyClickCancel: PropTypes.func,
+    generateFakeOpponent: PropTypes.func,
+    readyOpponent: PropTypes.func,
+    readyPlayer: PropTypes.func,
+    wagerInputMoney: PropTypes.func,
+    decideClickCooperate: PropTypes.func,
+    decideClickBetray: PropTypes.func,
+    resultUpdateScore: PropTypes.func,
+};
