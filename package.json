@@ -13,7 +13,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "prop-types": "^15.7.2",
-    "pubnub": "^4.27.2",
+    "pubnub": "^4.37.0",
     "pubnub-react": "^1.3.2",
     "react": "16.9.0",
     "react-native": "0.61.5",
